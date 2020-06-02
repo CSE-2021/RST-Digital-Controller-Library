@@ -695,7 +695,6 @@ end
 
 function no_int=has_no_integrator(A)%finds if A has no integrator
 r=roots(A);
-r
 sr=size(r);
 no_int=true;
 for k=1:sr(1)
