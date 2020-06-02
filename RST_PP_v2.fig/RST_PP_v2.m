@@ -806,7 +806,22 @@ write2File('parameters.c',[T;R;S],['double T[]  ';'double R[]  '; 'double S[]  '
 
 simulate_RST(Ts, Bp, Ap, R, S, T, Bm, Am, dist, handles);
 
-
+function printConfiguration(A, B, w0, zeta, filePath)
+    fileID = fopen(filePath, 'w');
+    dimA = size(A, 2);
+    dimB = size(B, 2);
+    for i=1:dimA
+        fprintf(fileID, '#define A%d %f\n', i, A(1, i));
+    end
+    fprintf(fileID, '\n');
+    for i=1:dimB
+        fprintf(fileID, '#define B%d %f\n', i, A(1, i));
+    end
+    fprintf(fileID, '\n');
+    fprintf(fileID, '#define ZETA %f\n\n', zeta);
+    fprintf(fileID, '#define W0 %f', w0);
+    fclose(fileID);
+endfunction
     
 function write2File(filepath,mat,name)
 dim = size(mat);
