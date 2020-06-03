@@ -790,9 +790,10 @@ function pushbutton1_Callback(hObject, eventdata, handles)%update plant only
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [Ts Bp Ap Hr Hs dist P Bm Am]=acquire_data(handles);
-fileID = fopen('input.c','w');
-inp = [Ap; Bp];
-write2File('input.c',inp,['Ap';'Bp']);
+fileID = fopen('input.h','w');
+% inp = [Ap; Bp];
+write2File('input.h',Ap,'Ap');
+write2File('input.h',Bp,'Bp');
 
 R=str2num(get(handles.edit17, 'string'));%full R S T values
 S=str2num(get(handles.edit18, 'string'));
@@ -800,11 +801,22 @@ T=str2num(get(handles.edit19, 'string'));
 
 R=conv(R, Hr);
 S=conv(S, Hs);
-
-file2ID = fopen('parameters.c','w');
-write2File('parameters.c',[T;R;S],['double T[]  ';'double R[]  '; 'double S[]  ']);
-
 simulate_RST(Ts, Bp, Ap, R, S, T, Bm, Am, dist, handles);
+sizeR = size(R,2);
+for k=1:5-sizeR
+    R = [R,0];
+end
+sizeS = size(S,2);
+for k=1:5-sizeS
+    S = [S,0];
+end
+currentDir = pwd;
+mainDir = erase(currentDir,'RST_PP_v2.fig');
+fileName = insertAfter(mainDir,'RST-Digital-Controller-Library\','RST_Keil\parameters.h');
+file2ID = fopen(fileName,'w');
+write2File(fileName,T,'double T[] ');
+write2File(fileName,[R;S],['double R[] ';'double S[] ']);
+
 
 function printConfiguration(A, B, w0, zeta, filePath)
     fileID = fopen(filePath, 'w');
@@ -821,17 +833,17 @@ function printConfiguration(A, B, w0, zeta, filePath)
     fprintf(fileID, '#define ZETA %f\n\n', zeta);
     fprintf(fileID, '#define W0 %f', w0);
     fclose(fileID);
-endfunction
     
 function write2File(filepath,mat,name)
 dim = size(mat);
 fileID = fopen(filepath,'a');
 for k=1:dim(1)
     var = mat(k,:);
-    out=['[' sprintf(' %f, ', var(1:end-1) ) num2str(var(end))  ']'];
+    out=['{' sprintf(' %f, ', var(1:end-1) ) num2str(var(end))  '}'];
     fprintf(fileID, '%s = %s;\n',name(k,:),out);
 end
 fclose(fileID);
+fclose('all');
 
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)%solve
@@ -891,10 +903,21 @@ set(handles.edit19, 'string',['[' num2str(T) ']']);
 
 R=conv(R, Hr);
 S=conv(S, Hs);
-
-file2ID = fopen('parameters.c','w');
-write2File('parameters.c',[T;R;S],['double T[]  ';'double R[]  '; 'double S[]  ']);
 simulate_RST(Ts, Bp, Ap, R, S, T, Bm, Am, dist, handles);
+sizeR = size(R,2);
+for k=1:5-sizeR
+    R = [R,0];
+end
+sizeS = size(S,2);
+for k=1:5-sizeS
+    S = [S,0];
+end
+currentDir = pwd;
+mainDir = erase(currentDir,'RST_PP_v2.fig');
+fileName = insertAfter(mainDir,'RST-Digital-Controller-Library\','RST_Keil\parameters.h');
+file2ID = fopen(fileName,'w');
+write2File(fileName,T,'double T[] ');
+write2File(fileName,[R;S],['double R[] ';'double S[] ']);
 
 
 % --- Executes on button press in pushbutton3.
